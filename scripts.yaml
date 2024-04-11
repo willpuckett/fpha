@@ -26,3 +26,64 @@ phi_shutdown:
       entity_id: switch.phi_switch
   mode: single
   icon: mdi:ph
+dark_mode:
+  alias: Toggle TV Light Sensitivity
+  sequence:
+  - service: remote.send_command
+    metadata: {}
+    data:
+      delay_secs: 0.1
+      num_repeats: 3
+      command:
+      - menu
+    target:
+      entity_id: remote.prong
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 750
+  - service: remote.send_command
+    metadata: {}
+    data:
+      command:
+      - select
+    target:
+      entity_id: remote.prong
+  - service: input_boolean.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.light_sensitivity
+  mode: single
+tv_sleep_mode:
+  alias: Toggle TV White Point
+  sequence:
+  - service: remote.send_command
+    metadata: {}
+    data:
+      delay_secs: 0.1
+      num_repeats: 3
+      command:
+      - menu
+    target:
+      entity_id: remote.prong
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 750
+  - service: remote.send_command
+    metadata: {}
+    data:
+      command:
+      - down
+      - select
+    target:
+      entity_id: remote.prong
+  - service: input_boolean.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.white_point
+  mode: single

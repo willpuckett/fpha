@@ -98,6 +98,8 @@ sensor:
       id: ambient_temperature
       name: "Temperature"
       oversampling: 16x
+      filters:
+        - lambda: 'return x + 1;'
     pressure:
       name: "Pressure"
       id: ambient_pressure
@@ -121,6 +123,15 @@ sensor:
         - stepper.set_target:
             id: tmc_stepper
             target: !lambda "return (x * id(endstop_global)) / 100;"
+        - if:
+            condition:
+              lambda: 'return x > 0;'
+            then:
+              - fan.turn_on:
+                  id: heater_fan
+                  speed: 100
+            else:
+              - fan.turn_off: heater_fan
   # - platform: template
   #   name: "Current Stepper Position"
   #   unit_of_measurement: "steps"
@@ -151,6 +162,7 @@ sensor:
 
 fan:
   - platform: speed
+    id: heater_fan
     output: fan_output
     name: "Heater Fan"
 
@@ -164,10 +176,10 @@ climate:
     heat_output: heater_output
     control_parameters:
       kp: 4
-      ki: 0.2
+      ki: 0.4
       kd: 0.5
-      # output_averaging_samples: 5      # smooth the output over 5 samples
-      # derivative_averaging_samples: 5  # smooth the derivative value over 5 samples
+      output_averaging_samples: 5      # smooth the output over 5 samples
+      derivative_averaging_samples: 5  # smooth the derivative value over 5 samples
     # deadband_parameters:
     #   threshold_high: 0.5°C
     #   threshold_low: -1.0°C

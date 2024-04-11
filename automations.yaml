@@ -149,7 +149,7 @@
     - service: climate.set_temperature
       metadata: {}
       data:
-        temperature: 60
+        temperature: 62
       target:
         entity_id: climate.heater_pid_climate_controller
     - service: light.turn_off
@@ -196,27 +196,6 @@
       - light.rope_light
       - light.stove_light
       - light.vulcan_light
-  mode: single
-- id: '1707935420764'
-  alias: Lower Volume
-  description: ''
-  trigger:
-  - platform: time
-    at: '21:00:00'
-  condition:
-  - condition: state
-    entity_id: input_boolean.anyone_home
-    state: 'on'
-  - condition: state
-    entity_id: media_player.prong
-    state: 'on'
-  action:
-  - service: media_player.volume_set
-    metadata: {}
-    data:
-      volume_level: 0.2
-    target:
-      entity_id: media_player.prong_samsung
   mode: single
 - id: '1708445717490'
   alias: KMotion
@@ -378,3 +357,124 @@
         data: {}
   mode: single
   max_exceeded: silent
+- id: '1709535186772'
+  alias: TV Sleep Mode
+  description: ''
+  trigger:
+  - platform: time
+    at: '23:00:00'
+  condition:
+  - condition: state
+    entity_id: media_player.prong
+    state: playing
+  action:
+  - service: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.07
+    target:
+      entity_id: media_player.prong_samsung
+  - if:
+    - condition: state
+      entity_id: input_boolean.white_point
+      state: 'off'
+    then:
+    - service: script.tv_sleep_mode
+      metadata: {}
+      data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 750
+  - if:
+    - condition: state
+      entity_id: input_boolean.light_sensitivity
+      state: 'on'
+    then:
+    - service: script.dark_mode
+      metadata: {}
+      data: {}
+  mode: single
+- id: '1709535417856'
+  alias: TV Bright Mode
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.prong
+    from: standby
+    to: paused
+  - platform: state
+    entity_id:
+    - media_player.prong
+    from: standby
+    to: idle
+  condition:
+  - condition: sun
+    before: sunset
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.32
+    target:
+      entity_id: media_player.prong_samsung
+  - if:
+    - condition: state
+      entity_id: input_boolean.light_sensitivity
+      state: 'on'
+    then:
+    - service: script.dark_mode
+      metadata: {}
+      data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 750
+  - if:
+    - condition: state
+      entity_id: input_boolean.white_point
+      state: 'on'
+    then:
+    - service: script.tv_sleep_mode
+      metadata: {}
+      data: {}
+  mode: single
+- id: '1709574568785'
+  alias: TV Light Sensitivity
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: '60'
+  - platform: time
+    at: '20:45:00'
+  condition: []
+  action:
+  - if:
+    - condition: state
+      entity_id: media_player.prong
+      state: playing
+    then:
+    - service: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.22
+      target:
+        entity_id: media_player.prong_samsung
+    - if:
+      - condition: state
+        entity_id: input_boolean.light_sensitivity
+        state: 'off'
+      then:
+      - service: script.dark_mode
+        metadata: {}
+        data: {}
+  mode: single
