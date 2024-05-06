@@ -1,0 +1,19 @@
+substitutions:
+  name: pedestal-light
+  friendly_name: Pedestal Light
+packages:
+  Athom_Technology.RGBCCT_Bulb: github://athom-tech/athom-configs/athom-rgbct-light.yaml
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+  friendly_name: ${friendly_name}
+api:
+  encryption:
+    key: !secret encryption_key
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  password: !secret ota_password

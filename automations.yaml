@@ -67,10 +67,12 @@
     target:
       entity_id:
       - light.erik_light
-      - light.rope_light
       - light.stove_light
       - light.vulcan_light
       - light.phil_light
+      - light.pedestal_light_rgbct_bulb
+      - light.magnifylight_lights
+      - light.rope_light
   - if:
     - condition: trigger
       id:
@@ -96,7 +98,7 @@
       domain: cover
       entity_id: 6a0c28cdf8ad014fbbef8b8122ec7f6d
       type: set_position
-      position: 10
+      position: 75
     - device_id: ad2c7f3bc7689b3eced0854e7597f5f1
       domain: cover
       entity_id: f481efc155d2282ce89320486e4c7fe1
@@ -170,6 +172,10 @@
         - light.group_entry
         - light.group_kitchen
         - light.stove_light
+        - light.magnifylight_lights
+        - light.pedestal_light_rgbct_bulb
+        - light.solderingfan_soldering_fan_lights
+        - light.pendantlight_rgbct_bulb
   - if:
     - condition: trigger
       id:
@@ -196,6 +202,10 @@
       - light.rope_light
       - light.stove_light
       - light.vulcan_light
+      - light.magnifylight_lights
+      - light.pedestal_light_rgbct_bulb
+      - light.solderingfan_soldering_fan_lights
+      - light.pendantlight_rgbct_bulb
   mode: single
 - id: '1708445717490'
   alias: KMotion
@@ -281,82 +291,6 @@
     target:
       entity_id: climate.heater_pid_climate_controller
   mode: single
-- id: '1708646656223'
-  alias: Phi Shutdown
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_boolean.phi
-    id: phi_boolean
-  - platform: device
-    type: changed_states
-    device_id: 4f45bf360d06636a37746f5de11fc861
-    entity_id: 82ce4532c9dbbda34c83bd0410d05622
-    domain: switch
-    id: phi_switch
-  condition: []
-  action:
-  - if:
-    - condition: trigger
-      id:
-      - phi_switch
-    then:
-    - if:
-      - condition: state
-        entity_id: switch.phi_switch
-        state: 'on'
-      then:
-      - service: input_boolean.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_boolean.phi
-      else:
-      - service: input_boolean.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: input_boolean.phi
-    else:
-    - if:
-      - condition: state
-        entity_id: input_boolean.phi
-        state: 'on'
-      then:
-      - service: switch.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id: switch.phi_switch
-      else:
-      - if:
-        - condition: state
-          entity_id: sensor.ph_current_print_state
-          state: printing
-        then:
-        - wait_for_trigger:
-          - platform: state
-            entity_id:
-            - sensor.ph_current_print_state
-            from: printing
-          continue_on_timeout: false
-      - if:
-        - condition: numeric_state
-          entity_id: sensor.ph_extruder_temperature
-          above: 50
-        then:
-        - wait_for_trigger:
-          - platform: numeric_state
-            entity_id:
-            - sensor.ph_extruder_temperature
-            below: 50
-          continue_on_timeout: false
-      - service: script.phi_shutdown
-        metadata: {}
-        data: {}
-  mode: single
-  max_exceeded: silent
 - id: '1709535186772'
   alias: TV Sleep Mode
   description: ''

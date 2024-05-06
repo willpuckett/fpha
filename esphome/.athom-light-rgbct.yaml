@@ -1,0 +1,131 @@
+# From https://github.com/athom-tech/athom-configs/blob/main/athom-rgbct-light.yaml
+
+substitutions:
+  project_name: "Athom Technology.RGBCCT Bulb"
+  project_version: "1.1"
+  light_restore_mode: RESTORE_DEFAULT_ON
+  color_interlock: 'true'
+
+globals:
+  - id: fast_boot
+    type: int
+    restore_value: yes
+    initial_value: '0'
+
+esphome:
+  project:
+    name: "${project_name}"
+    version: "${project_version}"
+  on_boot:
+    then:
+      - script.execute: fast_boot_script
+
+logger:
+  baud_rate: 0
+
+wifi:
+  ap: {} # This spawns an AP with the device name and mac address with no password.
+
+captive_portal:
+
+dashboard_import:
+  package_import_url: github://athom-tech/athom-configs/athom-rgbct-light.yaml
+
+binary_sensor:
+  - platform: status
+    name: "Status"
+
+sensor:
+  - platform: uptime
+    name: "Uptime Sensor"
+  - platform: wifi_signal
+    name: "${friendly_name} WiFi Signal"
+    update_interval: 60s
+
+button:
+  - platform: factory_reset
+    name: "Reset"
+    id: Reset
+  - platform: safe_mode
+    name: "Safe Mode"
+    internal: false
+
+output:
+  - platform: esp8266_pwm
+    id: red_output
+    pin: GPIO4
+    min_power: 0.000499
+    max_power: 1
+    zero_means_zero: true
+  - platform: esp8266_pwm
+    id: green_output
+    pin: GPIO12
+    min_power: 0.000499
+    max_power: 1
+    zero_means_zero: true
+  - platform: esp8266_pwm
+    id: blue_output
+    pin: GPIO14
+    min_power: 0.000499
+    max_power: 1
+    zero_means_zero: true
+  - platform: esp8266_pwm
+    id: white_output
+    pin: GPIO5
+    min_power: 0.01
+    max_power: 1
+    zero_means_zero: true
+  - platform: esp8266_pwm
+    id: ct_output
+    inverted: true
+    pin: GPIO13
+
+light:
+  - platform: rgbct
+    id: rgbct_light
+    name: "RGBCT_Bulb"
+    restore_mode: ${light_restore_mode}
+    red: red_output
+    green: green_output
+    blue: blue_output
+    white_brightness: white_output
+    color_temperature: ct_output
+    cold_white_color_temperature: 153 mireds
+    warm_white_color_temperature: 500 mireds
+    color_interlock: ${color_interlock}
+
+time:
+  - platform: sntp
+    id: sntp_time
+
+script:
+  - id: fast_boot_script
+    then:
+      - if:
+          condition:
+            lambda: return ( id(fast_boot) >= 3 );
+          then:
+            - lambda: |-
+                ESP_LOGD("athom-rgbct-light.yaml", "Now the counter is greater than or equal to 3, perform reset device and reboot");
+                id(fast_boot) = 0;
+                fast_boot->loop();
+                global_preferences->sync();
+                auto call = id(rgbct_light).turn_on();
+                call.set_transition_length(500);
+                call.set_brightness(1.0);
+                call.set_color_mode(ColorMode::RGB);
+                call.set_rgb(0.0, 0.0, 1.0);
+                call.perform();
+            - delay: 5s
+            - button.press: Reset
+      - lambda: |-
+          id(fast_boot) += 1;
+          fast_boot->loop();
+          global_preferences->sync();
+          ESP_LOGD("athom-rgbct-light.yaml", "Now the counter is %d.  Reset the device when the counter is greater than or equal to 3", id(fast_boot));
+      - delay: 10s
+      - lambda: |-
+          ESP_LOGD("athom-rgbct-light.yaml", "Reset counter");
+          id(fast_boot) = 0;
+          fast_boot->loop();
+          global_preferences->sync();
