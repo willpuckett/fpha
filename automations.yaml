@@ -4,18 +4,18 @@
   use_blueprint:
     path: homeassistant/motion_light.yaml
     input:
-      motion_entity: binary_sensor.bmotion_motion
+      motion_entity: binary_sensor.bathroom_motion
       light_target:
-        entity_id: light.group_bathroom
+        entity_id: light.bathroom
 - id: '1707927634977'
   alias: Emotion
   description: ''
   use_blueprint:
     path: homeassistant/motion_light.yaml
     input:
-      motion_entity: binary_sensor.emotion_motion
+      motion_entity: binary_sensor.entry_motion
       light_target:
-        entity_id: light.group_entry
+        entity_id: light.entry
       no_motion_wait: 60
 - id: '1707930534922'
   alias: Onward!
@@ -66,13 +66,13 @@
       transition: 300
     target:
       entity_id:
-      - light.erik_light
-      - light.stove_light
-      - light.vulcan_light
-      - light.phil_light
-      - light.magnifylight_lights
-      - light.rope_light
-      - light.trish_light
+      - light.erik
+      - light.stove
+      - light.vulkan
+      - light.phil
+      - light.magnify
+      - light.rope
+      - light.trish
   - if:
     - condition: trigger
       id:
@@ -80,28 +80,27 @@
       - weekend
     then:
     - service: switch.turn_on
-      target:
-        device_id:
-        - 6fa81328ac090c9153be898d12e2f17a
       data: {}
-    - device_id: f18cd5327f41c0374eb83fe36317cf9d
+      target:
+        device_id: c0618f784cee97f4afa59272c6191a7f
+    - device_id: 7b043f943364cacf3c00827a7355653f
       domain: cover
-      entity_id: 05020f99197f6a9e7bdb6c1c79b5ec42
+      entity_id: 4037ad983afd4ce0ad5c6bc6b252c74e
       type: set_position
       position: 10
-    - device_id: f18cd5327f41c0374eb83fe36317cf9d
+    - device_id: 7b043f943364cacf3c00827a7355653f
       domain: cover
-      entity_id: a63b34e98c58c894a8199e9238451450
+      entity_id: 6ffaf38c7847023443155190bfcae42d
       type: set_position
       position: 50
-    - device_id: f18cd5327f41c0374eb83fe36317cf9d
+    - device_id: 7b043f943364cacf3c00827a7355653f
       domain: cover
-      entity_id: 6a0c28cdf8ad014fbbef8b8122ec7f6d
+      entity_id: a19ec029d8766f0bab706de9debcff59
       type: set_position
       position: 80
-    - device_id: ad2c7f3bc7689b3eced0854e7597f5f1
+    - device_id: b0b04e316bb241bc98be3a12aac77931
       domain: cover
-      entity_id: f481efc155d2282ce89320486e4c7fe1
+      entity_id: c6a4e14673af501c152d5ee0bdd54580
       type: set_position
       position: 65
   - if:
@@ -121,7 +120,7 @@
     data:
       brightness_pct: 5
     target:
-      entity_id: light.pedestal_light_rgbct_bulb
+      entity_id: light.desk
   mode: single
 - id: '1707931473124'
   alias: Bye
@@ -141,7 +140,7 @@
     metadata: {}
     data: {}
     target:
-      device_id: 6fa81328ac090c9153be898d12e2f17a
+      device_id: c0618f784cee97f4afa59272c6191a7f
   - if:
     - condition: trigger
       id:
@@ -152,8 +151,8 @@
       data: {}
       target:
         device_id:
-        - ad2c7f3bc7689b3eced0854e7597f5f1
-        - f18cd5327f41c0374eb83fe36317cf9d
+        - 7b043f943364cacf3c00827a7355653f
+        - b0b04e316bb241bc98be3a12aac77931
     - service: climate.set_temperature
       metadata: {}
       data:
@@ -165,23 +164,12 @@
       data:
         transition: 120
       target:
-        device_id:
-        - 141219a7800903d23cd5b2368b1b9282
-        - c44bf49b281862593a8e4329ce442698
-        - 17d1fabfa60af236d6a8c7d2143324eb
-        - 290930aed57eedb88447ab6c720cf9af
-        - 9b7d23abafde40aa251f5b81549e8ff9
-        - e80bab26dd56ddc7438d06fca427469a
-        entity_id:
-        - light.group_bathroom
-        - light.group_chandler
-        - light.group_entry
-        - light.group_kitchen
-        - light.stove_light
-        - light.magnifylight_lights
-        - light.pedestal_light_rgbct_bulb
-        - light.solderingfan_soldering_fan_lights
-        - light.trish_light
+        area_id:
+        - bathroom
+        - entry
+        - kitchen
+        - studio
+        - closet
   - if:
     - condition: trigger
       id:
@@ -196,22 +184,12 @@
     metadata: {}
     data: {}
     target:
-      entity_id:
-      - light.group_bathroom
-      - light.group_chandler
-      - light.group_entry
-      - light.group_kitchen
-      - light.erik_light
-      - light.harold_light
-      - light.maude_light
-      - light.phil_light
-      - light.rope_light
-      - light.stove_light
-      - light.vulcan_light
-      - light.magnifylight_lights
-      - light.pedestal_light_rgbct_bulb
-      - light.solderingfan_soldering_fan_lights
-      - light.trish_light
+      area_id:
+      - bathroom
+      - closet
+      - entry
+      - kitchen
+      - studio
   mode: single
 - id: '1708445717490'
   alias: KMotion
@@ -219,8 +197,8 @@
   trigger:
   - type: motion
     platform: device
-    device_id: ee8fe718aaa90eca107268b369572c3d
-    entity_id: 289fe7554caaa84bf24e6c60caf23996
+    device_id: 596935b8e44dd98e99b020ec4685e78d
+    entity_id: 716c20000acf1fe8d580c9a0cfa9304b
     domain: binary_sensor
   condition: []
   action:
@@ -228,12 +206,12 @@
     metadata: {}
     data: {}
     target:
-      entity_id: light.group_kitchen
+      entity_id: light.kitchen
   - if:
     - condition: device
-      device_id: c7329de75150c48eef6138a229fd8aec
+      device_id: a45bdc9cf829957cdd6468addcd07951
       domain: media_player
-      entity_id: e7c7264e6384842c3f92f96e68b8f4c7
+      entity_id: 764a9c64330d5e4a5de3a2ede225da1a
       type: is_playing
     then:
     - service: media_player.media_pause
@@ -246,35 +224,31 @@
       before: sunset
       after: sunrise
     then:
-    - device_id: ad2c7f3bc7689b3eced0854e7597f5f1
+    - device_id: b0b04e316bb241bc98be3a12aac77931
       domain: cover
-      entity_id: f481efc155d2282ce89320486e4c7fe1
+      entity_id: c6a4e14673af501c152d5ee0bdd54580
       type: set_position
       position: 50
   - wait_for_trigger:
     - type: no_motion
       platform: device
-      device_id: ee8fe718aaa90eca107268b369572c3d
-      entity_id: 289fe7554caaa84bf24e6c60caf23996
+      device_id: 596935b8e44dd98e99b020ec4685e78d
+      entity_id: 716c20000acf1fe8d580c9a0cfa9304b
       domain: binary_sensor
-      for:
-        hours: 0
-        minutes: 1
-        seconds: 30
     continue_on_timeout: false
   - service: light.turn_off
     metadata: {}
     data: {}
     target:
-      entity_id: light.group_kitchen
+      entity_id: light.kitchen
   - if:
     - condition: sun
       before: sunset
       after: sunrise
     then:
-    - device_id: ad2c7f3bc7689b3eced0854e7597f5f1
+    - device_id: b0b04e316bb241bc98be3a12aac77931
       domain: cover
-      entity_id: f481efc155d2282ce89320486e4c7fe1
+      entity_id: c6a4e14673af501c152d5ee0bdd54580
       type: set_position
       position: 70
   mode: restart
@@ -313,7 +287,7 @@
     data:
       volume_level: 0.12
     target:
-      entity_id: media_player.prong_samsung
+      entity_id: media_player.samsung
   - if:
     - condition: state
       entity_id: input_boolean.white_point
@@ -364,7 +338,7 @@
     data:
       volume_level: 0.3
     target:
-      entity_id: media_player.prong_samsung
+      entity_id: media_player.samsung
   - if:
     - condition: state
       entity_id: input_boolean.light_sensitivity
@@ -393,7 +367,7 @@
   trigger:
   - platform: sun
     event: sunset
-    offset: 00:30:00
+    offset: '1:15:00'
   condition: []
   action:
   - if:
@@ -406,7 +380,7 @@
       data:
         volume_level: 0.26
       target:
-        entity_id: media_player.prong_samsung
+        entity_id: media_player.samsung
     - if:
       - condition: state
         entity_id: input_boolean.light_sensitivity
@@ -432,7 +406,7 @@
     data:
       volume_level: 0.05
     target:
-      entity_id: media_player.prong_samsung
+      entity_id: media_player.samsung
   - if:
     - condition: state
       entity_id: input_boolean.white_point
@@ -469,7 +443,7 @@
   - service: media_player.turn_off
     target:
       entity_id:
-      - media_player.prong_samsung
       - media_player.prong
+      - media_player.samsung
     data: {}
   mode: single
