@@ -47,6 +47,9 @@
         - wed
         - thu
         - fri
+      - condition: state
+        entity_id: input_boolean.anyone_home
+        state: 'on'
     - condition: and
       conditions:
       - condition: trigger
@@ -56,6 +59,9 @@
         weekday:
         - sun
         - sat
+      - condition: state
+        entity_id: input_boolean.anyone_home
+        state: 'on'
     - condition: trigger
       id:
       - anyone_home
