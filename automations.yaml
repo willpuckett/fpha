@@ -20,19 +20,32 @@
 - id: '1707930534922'
   alias: Onward!
   description: ''
-  trigger:
-  - platform: time
-    at: 06:15:00
+  triggers:
+  - at: 06:15:00
     id: weekday
-  - platform: time
-    at: 08:00:00
+    trigger: time
+  - at: 08:00:00
     id: weekend
-  - platform: state
-    entity_id:
+    trigger: time
+    enabled: false
+  - type: motion
+    device_id: 596935b8e44dd98e99b020ec4685e78d
+    entity_id: 716c20000acf1fe8d580c9a0cfa9304b
+    domain: binary_sensor
+    trigger: device
+    id: weekend
+  - type: motion
+    device_id: 23b3403079b16de7bdcc83986a81dfc6
+    entity_id: 423b05ce85363603c39d0ca0515502ff
+    domain: binary_sensor
+    trigger: device
+    id: weekend
+  - entity_id:
     - input_boolean.anyone_home
     to: 'on'
     id: anyone_home
-  condition:
+    trigger: state
+  conditions:
   - condition: or
     conditions:
     - condition: and
@@ -62,12 +75,17 @@
       - condition: state
         entity_id: input_boolean.anyone_home
         state: 'on'
+      - condition: time
+        after: 08:15:00
+        weekday:
+        - sun
+        - sat
+        before: '10:00:00'
     - condition: trigger
       id:
       - anyone_home
-  action:
-  - service: light.turn_on
-    metadata: {}
+  actions:
+  - metadata: {}
     data:
       transition: 300
     target:
@@ -79,16 +97,17 @@
       - light.magnify
       - light.rope
       - light.trish
+    action: light.turn_on
   - if:
     - condition: trigger
       id:
       - weekday
       - weekend
     then:
-    - service: switch.turn_on
-      data: {}
+    - data: {}
       target:
         device_id: c0618f784cee97f4afa59272c6191a7f
+      action: switch.turn_on
     - device_id: 7b043f943364cacf3c00827a7355653f
       domain: cover
       entity_id: 4037ad983afd4ce0ad5c6bc6b252c74e
@@ -114,19 +133,19 @@
       id:
       - anyone_home
     then:
-    - service: climate.set_temperature
-      metadata: {}
+    - metadata: {}
       data:
         temperature: 65
         hvac_mode: heat
       target:
         entity_id: climate.heater_pid_climate_controller
-  - service: light.turn_on
-    metadata: {}
+      action: climate.set_temperature
+  - metadata: {}
     data:
       brightness_pct: 5
     target:
       entity_id: light.desk
+    action: light.turn_on
   mode: single
 - id: '1707931473124'
   alias: Bye
@@ -288,20 +307,26 @@
     entity_id: media_player.prong
     state: playing
   action:
-  - service: media_player.volume_set
-    metadata: {}
-    data:
-      volume_level: 0.12
-    target:
+  - if:
+    - condition: numeric_state
       entity_id: media_player.samsung
+      attribute: volume_level
+      above: 0.12
+    then:
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.12
+      target:
+        entity_id: media_player.samsung
   - if:
     - condition: state
       entity_id: input_boolean.white_point
       state: 'off'
     then:
-    - service: script.tv_sleep_mode
-      metadata: {}
+    - metadata: {}
       data: {}
+      action: script.tv_sleep_mode
   - delay:
       hours: 0
       minutes: 0
@@ -312,9 +337,9 @@
       entity_id: input_boolean.light_sensitivity
       state: 'on'
     then:
-    - service: script.dark_mode
-      metadata: {}
+    - metadata: {}
       data: {}
+      action: script.dark_mode
   mode: single
 - id: '1709535417856'
   alias: TV Bright Mode
@@ -381,20 +406,26 @@
       entity_id: media_player.prong
       state: playing
     then:
-    - service: media_player.volume_set
-      metadata: {}
-      data:
-        volume_level: 0.26
-      target:
+    - if:
+      - condition: numeric_state
         entity_id: media_player.samsung
+        attribute: volume_level
+        above: 0.26
+      then:
+      - action: media_player.volume_set
+        metadata: {}
+        data:
+          volume_level: 0.26
+        target:
+          entity_id: media_player.samsung
     - if:
       - condition: state
         entity_id: input_boolean.light_sensitivity
         state: 'off'
       then:
-      - service: script.dark_mode
-        metadata: {}
+      - metadata: {}
         data: {}
+        action: script.dark_mode
   mode: single
 - id: '1715782988642'
   alias: TV Quiet Mode
@@ -407,20 +438,26 @@
     entity_id: media_player.prong
     state: playing
   action:
-  - service: media_player.volume_set
-    metadata: {}
-    data:
-      volume_level: 0.05
-    target:
+  - if:
+    - condition: numeric_state
       entity_id: media_player.samsung
+      attribute: volume_level
+      above: 0.05
+    then:
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 0.05
+      target:
+        entity_id: media_player.samsung
   - if:
     - condition: state
       entity_id: input_boolean.white_point
       state: 'off'
     then:
-    - service: script.tv_sleep_mode
-      metadata: {}
+    - metadata: {}
       data: {}
+      action: script.tv_sleep_mode
   - delay:
       hours: 0
       minutes: 0
@@ -431,9 +468,9 @@
       entity_id: input_boolean.light_sensitivity
       state: 'on'
     then:
-    - service: script.dark_mode
-      metadata: {}
+    - metadata: {}
       data: {}
+      action: script.dark_mode
   mode: single
 - id: '1715783114636'
   alias: Turn Off TV
@@ -453,3 +490,172 @@
       - media_player.samsung
     data: {}
   mode: single
+- id: '1728014433536'
+  alias: Bench
+  description: Let's Solder!
+  triggers:
+  - device_id: 62e6f83f8d10df332c77c6238e3abb09
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_on
+    trigger: device
+    id: 'on'
+  - device_id: 62e6f83f8d10df332c77c6238e3abb09
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_off
+    trigger: device
+    id: 'off'
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - 'on'
+    then:
+    - action: adaptive_lighting.set_manual_control
+      metadata: {}
+      data:
+        manual_control: true
+        entity_id: switch.adaptive_lighting_adapt_brightness_main
+        lights:
+        - light.magnify
+        - light.soldering_light
+        - light.trish
+    - action: fan.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: fan.soldering_fan
+    - action: light.turn_on
+      metadata: {}
+      data:
+        brightness_pct: 100
+      target:
+        entity_id:
+        - light.soldering_light
+        - light.magnify
+        - light.trish
+  - if:
+    - condition: trigger
+      id:
+      - 'off'
+    then:
+    - action: adaptive_lighting.set_manual_control
+      metadata: {}
+      data:
+        manual_control: false
+        entity_id: switch.adaptive_lighting_adapt_brightness_main
+        lights:
+        - light.magnify
+        - light.soldering_light
+        - light.trish
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - light.soldering_light
+    - action: fan.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: fan.soldering_fan
+  mode: single
+- id: '1728020947954'
+  alias: Work Lights
+  description: ''
+  triggers:
+  - type: motion
+    device_id: 97114d7e6ec7d418df899849ba92c756
+    entity_id: fd3cbcbfc5bc5355af4a542c90471ea4
+    domain: binary_sensor
+    trigger: device
+    id: 'on'
+  - type: no_motion
+    device_id: 97114d7e6ec7d418df899849ba92c756
+    entity_id: fd3cbcbfc5bc5355af4a542c90471ea4
+    domain: binary_sensor
+    trigger: device
+    id: 'off'
+  conditions:
+  - condition: time
+    before: '22:30:00'
+    after: 06:00:00
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - 'on'
+    then:
+    - action: adaptive_lighting.set_manual_control
+      metadata: {}
+      data:
+        manual_control: true
+        entity_id: switch.adaptive_lighting_adapt_brightness_main
+        lights:
+        - light.magnify
+        - light.trish
+    - action: light.turn_on
+      metadata: {}
+      data:
+        brightness_pct: 80
+      target:
+        entity_id:
+        - light.trish
+        - light.magnify
+    - if:
+      - condition: sun
+        after: sunrise
+        before: sunset
+        after_offset: '2: 00:00'
+      then:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 50
+        target:
+          entity_id:
+          - cover.blinds02_left
+          - cover.blinds02_center
+          - cover.blinds02_right
+  - if:
+    - condition: trigger
+      id:
+      - 'off'
+    then:
+    - delay:
+        hours: 0
+        minutes: 5
+        seconds: 0
+        milliseconds: 0
+    - action: adaptive_lighting.set_manual_control
+      metadata: {}
+      data:
+        manual_control: false
+        entity_id: switch.adaptive_lighting_adapt_brightness_main
+        lights:
+        - light.magnify
+        - light.trish
+    - action: light.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - light.trish
+        - light.magnify
+    - if:
+      - condition: sun
+        before: sunset
+        after: sunrise
+        after_offset: '2:00:00'
+      then:
+      - action: cover.set_cover_position
+        metadata: {}
+        data:
+          position: 80
+        target:
+          entity_id:
+          - cover.blinds02_left
+          - cover.blinds02_center
+  mode: restart
